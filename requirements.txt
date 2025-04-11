@@ -4,7 +4,8 @@ face-recognition
 cvzone
 opencv-python
 numpy
-
+firebase_admin
+dotenv
 
 
 
