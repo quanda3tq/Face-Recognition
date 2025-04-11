@@ -8,7 +8,7 @@
 clone the repository
 
 ```bash
-git 
+git clone https://github.com/quanda3tq/Face-Recognition.git
 ```
 ### STEP 01- Create a conda enviroment after opening the reopsitory:
 
