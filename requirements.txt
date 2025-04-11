@@ -3,6 +3,8 @@ dlib
 face-recognition
 cvzone
 opencv-python
+numpy
+
 
 
 
