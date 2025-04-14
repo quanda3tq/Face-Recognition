@@ -24,7 +24,7 @@ data = {
         "birthdate": "2003-03-05",
         "address": "Ha Noi",
         "last_login_time": "2025-01-01 12:00:00",
-        "tatol_attendance": 1
+        "tatol_attendance": 7
     }
 }
 
