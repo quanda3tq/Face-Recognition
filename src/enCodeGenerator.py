@@ -31,6 +31,8 @@ for path in PathList:
 
     fileName = os.path.join(FolderPath, path)
     bucket = storage.bucket()
+    blob = bucket.blob(fileName)
+    blob.upload_from_filename(fileName)
 
     # print(path)
     # print(os.path.splitext(path)[0])
