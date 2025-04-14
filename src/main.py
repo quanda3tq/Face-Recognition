@@ -4,7 +4,20 @@ import pickle
 import face_recognition
 import numpy as np
 import cvzone
+import firebase_admin
+from dotenv import load_dotenv
+from firebase_admin import credentials
+from firebase_admin import db
+from firebase_admin import storage
 
+
+load_dotenv()
+
+cred = credentials.Certificate(os.getenv("FIREBASE_CREDENTIALS_PATH"))
+firebase_admin.initialize_app(cred, {
+    'databaseURL': os.getenv("FIREBASE_DATABASE_URL"),
+    'storageBucket': os.getenv("STORAGE_BUCKET")
+})
 
 cap = cv2.VideoCapture(0)
 cap.set(3, 640)
@@ -32,6 +45,11 @@ encodeListKnown, employeeId = encodeListKnownWithId
 print("encode file loaded")
 
 
+modeType = 0
+counter = 0
+id = 0
+
+
 while True:
     success, img = cap.read()
 
@@ -42,7 +60,7 @@ while True:
     encodeCurFrame = face_recognition.face_encodings(imgS, faceCurFrame)
 
     imgBackground[162:162 + 480, 55:55 + 640] = img
-    imgBackground[44:44 + 633, 808:808 + 414] = imgModeList[0]
+    imgBackground[44:44 + 633, 808:808 + 414] = imgModeList[modeType]
 
     for encodeFace, faceLoc in zip(encodeCurFrame, faceCurFrame):
         matches = face_recognition.compare_faces(encodeListKnown, encodeFace)
@@ -60,6 +78,28 @@ while True:
             y1, x2, y2, x1 = y1 * 4, x2 *4, y2 *4, x1 *4
             bbox = 55 + x1, 162 + y1, x2 - x1, y2 - y1
             imgBackground = cvzone.cornerRect(imgBackground, bbox, rt=0)
+
+            id = employeeId[matchIndex]
+
+            if counter == 0:
+                counter = 1
+                modeType = 1
+    
+    if counter != 0:
+        if counter == 1:
+            employeeInfo = db.reference(f'Employees/{id}').get()
+            print(employeeInfo)
+
+        cv2.putText(imgBackground,str(employeeInfo['tatol_attendance']), (861,125),
+                    cv2.FONT_HERSHEY_COMPLEX,1,(255,255,255),1)
+        cv2.putText(imgBackground,str(employeeInfo['name']), (808,455),
+                    cv2.FONT_HERSHEY_COMPLEX,1,(255,255,255),1)
+        cv2.putText(imgBackground,str(employeeInfo['dapartment']), (1006,550),
+                    cv2.FONT_HERSHEY_COMPLEX,1,(255,255,255),1)
+        cv2.putText(imgBackground, str(id),(1006, 493),
+                    cv2.FONT_HERSHEY_COMPLEX,1,(255,255,255),1)
+        
+        counter += 1
 
 
     # cv2.imshow("Webcam", img)
